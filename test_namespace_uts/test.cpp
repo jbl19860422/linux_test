@@ -22,7 +22,7 @@ int main(char argc, char *argv[])
 		return -1;
 	}
 	
-	child_pid = clone(child_func, child_stack + sizeof(child_stack), CLONE_NEWUTS | SIGCHLD, argv[1]);
+	child_pid = clone(child_func, child_stack + sizeof(child_stack), CLONE_NEWUTS | CLONE_NEWIPC |  CLONE_NEWPID | SIGCHLD, argv[1]);
 	if(-1 == child_pid) {
 		std::cerr << "create child process failed" << std::endl;
 		return -1;
