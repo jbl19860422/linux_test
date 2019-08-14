@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/webrtc/test_linux/linux_test/test_flock/file_locker.cpp
+file_locker.h
+/webrtc/test_linux/linux_test/test_flock/file_locker.h
+sys/file.h
+-
+unistd.h
+-
+
+/webrtc/test_linux/linux_test/test_flock/file_locker.h
+string
+-
+stdio.h
+-
+atomic
+-
+
+/webrtc/test_linux/linux_test/test_flock/main.cpp
+functional
+-
+thread
+-
+unistd.h
+-
+iostream
+-
+file_locker.h
+/webrtc/test_linux/linux_test/test_flock/file_locker.h
+
