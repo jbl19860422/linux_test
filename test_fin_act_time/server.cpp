@@ -56,6 +56,8 @@ int main(char argc, char *argv[])
         int n = read(client_sock, &buf, 1024);
         if(n == 0) {
             std::cout << "socket disconnect" << std::endl;
+            close(client_sock);
+            break;
         }
         #else
         sleep(10);

@@ -26,16 +26,24 @@ tcp        1      0 localhost:9999          localhost:57924         CLOSE_WAIT  
 ```
 ### 服务端调用了 read时的情况
 ```
-13:04:46.993946 IP localhost.57920 > localhost.9999: Flags [S], seq 1971058606, win 43690, options [mss 65495,sackOK,TS val 913049585 ecr 0,nop,wscale 7], length 0
-13:04:46.994000 IP localhost.9999 > localhost.57920: Flags [S.], seq 3376204913, ack 1971058607, win 43690, options [mss 65495,sackOK,TS val 913049537 ecr 913049585,nop,wscale 7], length 0
-13:04:46.994035 IP localhost.57920 > localhost.9999: Flags [.], ack 1, win 342, options [nop,nop,TS val 913049585 ecr 913049537], length 0
-13:04:46.994941 IP localhost.57920 > localhost.9999: Flags [F.], seq 1, ack 1, win 342, options [nop,nop,TS val 913049586 ecr 913049537], length 0
-13:04:46.998462 IP localhost.9999 > localhost.57920: Flags [.], ack 2, win 229, options [nop,nop,TS val 913049590 ecr 913049586], length 0
-13:04:49.623929 IP localhost.9999 > localhost.57920: Flags [F.], seq 1, ack 2, win 229, options [nop,nop,TS val 913052215 ecr 913049586], length 0
-13:04:49.624169 IP localhost.57920 > localhost.9999: Flags [.], ack 2, win 342, options [nop,nop,TS val 913052215 ecr 913052215], length 0
+09:29:28.678127 IP localhost.35624 > localhost.9999: Flags [S], seq 1325481039, win 43690, options [mss 65495,sackOK,TS val 3788360528 ecr 0,nop,wscale 7], length 0
+09:29:28.678325 IP localhost.9999 > localhost.35624: Flags [S.], seq 2984879197, ack 1325481040, win 43690, options [mss 65495,sackOK,TS val 3788360473 ecr 3788360528,nop,wscale 7], length 0
+09:29:28.678358 IP localhost.35624 > localhost.9999: Flags [.], ack 1, win 342, options [nop,nop,TS val 3788360529 ecr 3788360473], length 0
+09:29:28.678928 IP localhost.35624 > localhost.9999: Flags [F.], seq 1, ack 1, win 342, options [nop,nop,TS val 3788360530 ecr 3788360473], length 0
+09:29:28.682929 IP localhost.9999 > localhost.35624: Flags [.], ack 2, win 229, options [nop,nop,TS val 3788360533 ecr 3788360530], length 0
 ```
-可以看到，在服务端只要有调用read那个socket，那么read就会触发内核返回ack后再发送fin给客户端（并不需要调用close）；
-此时服务端可以看到socket的状态为：
+可以看到，服务端有调用read，收到fin时，内核会自动返回ack，然后等待上层close：
+
+### 服务端调用了 close时的情况
+```
+09:32:13.343316 IP localhost.35626 > localhost.9999: Flags [S], seq 3925462651, win 43690, options [mss 65495,sackOK,TS val 3788525194 ecr 0,nop,wscale 7], length 0
+09:32:13.343481 IP localhost.9999 > localhost.35626: Flags [S.], seq 3595503373, ack 3925462652, win 43690, options [mss 65495,sackOK,TS val 3788525145 ecr 3788525194,nop,wscale 7], length 0
+09:32:13.343512 IP localhost.35626 > localhost.9999: Flags [.], ack 1, win 342, options [nop,nop,TS val 3788525194 ecr 3788525145], length 0
+09:32:13.343845 IP localhost.35626 > localhost.9999: Flags [F.], seq 1, ack 1, win 342, options [nop,nop,TS val 3788525194 ecr 3788525145], length 0
+09:32:13.344664 IP localhost.9999 > localhost.35626: Flags [F.], seq 1, ack 2, win 229, options [nop,nop,TS val 3788525195 ecr 3788525194], length 0
+09:32:13.344704 IP localhost.35626 > localhost.9999: Flags [.], ack 2, win 342, options [nop,nop,TS val 3788525195 ecr 3788525195], length 0
+```
+可以看到，服务端调用了close后，会回fin包给客户端，同时ack也会在那个包里面返回（不是应该分成两个包吗？）
 ```
 tcp        0      0 localhost:9999          *:*                     LISTEN      103342/server   
 tcp        0      0 localhost:9999          localhost:57922         CLOSE_WAIT  103342/server
